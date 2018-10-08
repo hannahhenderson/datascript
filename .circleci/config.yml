@@ -14,9 +14,9 @@ orbs:
           docker_image: circleci/clojure:lein
         steps:
           - clojure/generic_commands:
-              restore_key: dependency-cache-{{ checksum "project.clj" }}
+              restore_key: "dependency-cache-{{ checksum \"project.clj\" }}"
               test_str: << parameters.test_str >>
-              save_key: dependency-cache-{{ checksum "project.clj" }}
+              save_key: "dependency-cache-{{ checksum \"project.clj\" }}"
               save_path: ~/.m2
 
 workflows:
