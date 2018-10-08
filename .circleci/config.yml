@@ -13,20 +13,11 @@ orbs:
           wd: ~/datascript
           docker_image: circleci/clojure:lein
         steps:
-          - clojure/generic_commands
+          - clojure/generic_commands:
               restore_key: dependency-cache-{{ checksum "project.clj" }}
               test_str: << parameters.test_str >>
               save_key: dependency-cache-{{ checksum "project.clj" }}
               save_path: ~/.m2
-
-# TODO: After turning this into a clojure orb, create an orb that only accepts a different run line, and use that
-#  datascript:
-#    jobs:
-#      populated:
-#        parameters:
-#          test_str:
-#            type: string
-#        - clojure/generic-job
 
 workflows:
   build-test-deploy:
