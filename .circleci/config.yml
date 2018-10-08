@@ -23,4 +23,5 @@ workflows:
   build-test-deploy:
     jobs:
     - clojure_with_args:
+        name: test_clj
         test_str: lein test-clj-all
