@@ -16,7 +16,7 @@ workflows:
   build-test-deploy:
     jobs:
     - clojure/generic_job:
-        description: test_clj
+        description: test_clj job
         wd: ~/datascript
         docker_image: circleci/clojure:lein
         restore_key: dependency-cache-{{ checksum "project.clj" }}
