@@ -4,7 +4,7 @@ orbs:
   clojure: hannah/clojure@dev:test
   datascript:
     jobs:
-    - clojure_with_args:
+     clojure_with_args:
         parameters:
           test_str:
             type: string
