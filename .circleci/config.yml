@@ -43,11 +43,13 @@ workflows:
         test_str: lein with-profile dev,1.9 test-clj-all
     - clojure_with_args:
         name: build_cljs
-        test_str: lein test-clj-all
+        test_str: lein cljsbuild once advanced release
         post-steps:
           - persist_to_workspace:
               root: .
               paths:
               - target/datascript.js
               - release-js/datascript.js
-    - test_cljs
+    - test_cljs:
+        requires:
+        - build_cljs
