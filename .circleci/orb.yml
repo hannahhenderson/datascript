@@ -28,14 +28,13 @@ jobs:
       wd: << parameters.wd >>
       docker_image: << parameters.docker_image >>
     steps:
-    - checkout
-    - restore_cache:
-        key: << parameters.restore_key >>
-    - run: << parameters.test_str >>
-    - save_cache:
-        key: << parameters.save_key >>
-        paths:
-         - << parameters.save_path >>
+      - generic_commands:
+          restore_key: << parameters.restore_key >>
+          test_str: << parameters.test_str >>
+          test_directory: << parameters.test_directory >>
+          save_key: << parameters.save_key >>
+          save_path: << parameters.save_path >>
+
 executors:
   generic_exec:
     parameters:
@@ -48,3 +47,31 @@ executors:
     working_directory: << parameters.wd >>
     docker:
     - image: <<parameters.docker_image>>
+
+commands:
+  generic_commands:
+    parameters:
+      restore_key:
+        type: string
+        default: "<< checksum \"project.clj\" >>"
+      test_str:
+        type: string
+        default: "lein test"
+      test_directory:
+        type: string
+        default: ""
+      save_key:
+        type: string
+        default: "<< checksum \"project.clj\" >>"
+      save_path:
+        type: string
+        default: ~/.m2
+    steps:
+      - checkout
+      - restore_cache:
+          key: << parameters.restore_key >>
+      - run: << parameters.test_str >>
+      - save_cache:
+          key: << parameters.save_key >>
+          paths:
+          - << parameters.save_path >>
