@@ -50,8 +50,8 @@ commands:
           - run:
               working_directory: << parameters.test_wd >>
               command: << parameters.test_str >>
-      - when:
-          condition: ! << parameters.test_wd >>
+      - unless:
+          condition: << parameters.test_wd >>
           steps:
           - run: << parameters.test_str >>
       - steps: << parameters.pre_save_steps >>
