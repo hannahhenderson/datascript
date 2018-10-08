@@ -16,10 +16,9 @@ jobs:
       save_key:
         type: string
         default: "<< checksum \"project.clj\" >>"
-      save_paths:
-        type: steps
-        default:
-        - ~/.m2
+      save_path:
+        type: string
+        default: ~/.m2
       wd:
         type: string
       docker_image:
@@ -35,7 +34,8 @@ jobs:
     - run: << parameters.test_str >>
     - save_cache:
         key: << parameters.save_key >>
-        paths: << parameters.save_paths >>
+        paths:
+         - << parameters.save_path >>
 executors:
   generic_exec:
     parameters:

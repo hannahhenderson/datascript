@@ -22,5 +22,4 @@ workflows:
         restore_key: dependency-cache-{{ checksum "project.clj" }}
         test_str: lein test-clj-all
         save_key: dependency-cache-{{ checksum "project.clj" }}
-        paths:
-          - ~/.m2
+        paths: ~/.m2
