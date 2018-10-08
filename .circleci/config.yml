@@ -2,25 +2,25 @@ version: 2.1
 
 orbs:
   clojure: hannah/clojure@dev:test
-  datascript:
-    jobs:
-     clojure_with_args:
-        parameters:
-          test_str:
-            type: string
-        executor:
-          name: clojure/generic_exec
-          wd: ~/datascript
-          docker_image: circleci/clojure:lein
-        steps:
-          - clojure/generic_commands:
-              restore_key: "dependency-cache-{{ checksum \"project.clj\" }}"
-              test_str: << parameters.test_str >>
-              save_key: "dependency-cache-{{ checksum \"project.clj\" }}"
-              save_path: ~/.m2
+
+jobs:
+ clojure_with_args:
+    parameters:
+      test_str:
+        type: string
+    executor:
+      name: clojure/generic_exec
+      wd: ~/datascript
+      docker_image: circleci/clojure:lein
+    steps:
+      - clojure/generic_commands:
+          restore_key: "dependency-cache-{{ checksum \"project.clj\" }}"
+          test_str: << parameters.test_str >>
+          save_key: "dependency-cache-{{ checksum \"project.clj\" }}"
+          save_path: ~/.m2
 
 workflows:
   build-test-deploy:
     jobs:
-    - datascript/clojure_with_args:
+    - clojure_with_args:
         test_str: lein test-clj-all
