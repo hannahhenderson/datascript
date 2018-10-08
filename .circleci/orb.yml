@@ -2,39 +2,6 @@ version: 2.1
 description: hannah/clojure@dev:test orb
 
 jobs:
-  cached_test_job:
-    parameters:
-      restore_key:
-        type: string
-        default: << checksum "project.clj" >>
-      test_str:
-        type: string
-        default: "lein test"
-      test_directory:
-        type: string
-        default: ""
-      save_key:
-        type: string
-        default: << checksum "project.clj" >>
-      save_path:
-        type: string
-        default: ~/.m2
-      wd:
-        type: string
-      docker_image:
-        type: string
-    executor:
-      name: generic_exec
-      wd: << parameters.wd >>
-      docker_image: << parameters.docker_image >>
-    steps:
-      - cached_test:
-          restore_key: << parameters.restore_key >>
-          test_str: << parameters.test_str >>
-          test_directory: << parameters.test_directory >>
-          save_key: << parameters.save_key >>
-          save_path: << parameters.save_path >>
-
 executors:
   generic_exec:
     parameters:
@@ -54,12 +21,18 @@ commands:
       restore_key:
         type: string
         default: << checksum "project.clj" >>
+      pre_test_steps:
+        type: steps
+        default: []
       test_str:
         type: string
         default: "lein test"
-      test_directory:
+      test_wd:
         type: string
         default: ""
+      pre_save_steps:
+        type: steps
+        default: []
       save_key:
         type: string
         default: << checksum "project.clj" >>
@@ -70,8 +43,26 @@ commands:
       - checkout
       - restore_cache:
           key: << parameters.restore_key >>
-      - run: << parameters.test_str >>
-      - save_cache:
-          key: << parameters.save_key >>
-          paths:
-          - << parameters.save_path >>
+      - steps: << parameters.pre_test_steps >>
+      - when:
+          condition: << parameters.test_wd >>
+          steps:
+          - run:
+              working_directory: << parameters.test_wd >>
+              command: << parameters.test_str >>
+      - when:
+          condition: ! << parameters.test_wd >>
+          steps:
+          - run: << parameters.test_str >>
+      - steps: << parameters.pre_save_steps >>
+      - when:
+          # If you require multiple 'paths' in your
+          # save_cache command, we recommend adding
+          # the entire command as separate command
+          # or post-step
+          condition: << parameters.save_path >>
+          steps:
+          - save_cache:
+              key: << parameters.save_key >>
+              paths:
+              - << parameters.save_path >>
