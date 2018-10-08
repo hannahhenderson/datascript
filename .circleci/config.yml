@@ -16,10 +16,10 @@ workflows:
   build-test-deploy:
     jobs:
     - clojure/generic_job:
-        description: test_clj job
+#        description: test_clj job
         wd: ~/datascript
         docker_image: circleci/clojure:lein
         restore_key: dependency-cache-{{ checksum "project.clj" }}
         test_str: lein test-clj-all
         save_key: dependency-cache-{{ checksum "project.clj" }}
-        paths: ~/.m2
+        save_path: ~/.m2
