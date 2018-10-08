@@ -1,84 +1,26 @@
-version: 2
-jobs:
-   test_clj:
-     working_directory: ~/datascript
-     docker:
-       - image: circleci/clojure:lein
-     steps:
-       - checkout
-       - restore_cache:
-           key: dependency-cache-{{ checksum "project.clj" }}
-       - run: lein test-clj-all
-       - save_cache:
-           key: dependency-cache-{{ checksum "project.clj" }}
-           paths:
-             - ~/.m2
+version: 2.1
 
-   test_clj_18:
-     working_directory: ~/datascript
-     docker:
-       - image: circleci/clojure:lein
-     steps:
-       - checkout
-       - restore_cache:
-           key: dependency-cache-{{ checksum "project.clj" }}
-       - run: lein with-profile dev,1.8 test-clj-all
-       - save_cache:
-           key: dependency-cache-{{ checksum "project.clj" }}
-           paths:
-             - ~/.m2
+orbs:
+  clojure: hannah/clojure@dev:test
 
-   test_clj_19:
-     working_directory: ~/datascript
-     docker:
-       - image: circleci/clojure:lein
-     steps:
-       - checkout
-       - restore_cache:
-           key: dependency-cache-{{ checksum "project.clj" }}
-       - run: lein with-profile dev,1.9 test-clj-all
-       - save_cache:
-           key: dependency-cache-{{ checksum "project.clj" }}
-           paths:
-             - ~/.m2
-
-   build_cljs:
-     working_directory: ~/datascript
-     docker:
-       - image: circleci/clojure:lein
-     steps:
-       - checkout
-       - restore_cache:
-           key: dependency-cache-{{ checksum "project.clj" }}
-       - run: lein cljsbuild once advanced release
-       - save_cache:
-           key: dependency-cache-{{ checksum "project.clj" }}
-           paths:
-             - ~/.m2
-       - persist_to_workspace:
-           root: .
-           paths:
-             - target/datascript.js
-             - release-js/datascript.js
-
-   test_cljs:
-     working_directory: ~/datascript
-     docker:
-       - image: circleci/node:8
-     steps:
-       - checkout
-       - attach_workspace:
-           at: .
-       - run: node ./test_node.js --all
+# TODO: After turning this into a clojure orb, create an orb that only accepts a different run line, and use that
+#  datascript:
+#    jobs:
+#      populated:
+#        parameters:
+#          test_str:
+#            type: string
+#        - clojure/generic-job
 
 workflows:
-  version: 2
-  everything:
+  build-test-deploy:
     jobs:
-      - test_clj
-      - test_clj_18
-      - test_clj_19
-      - build_cljs
-      - test_cljs:
-          requires:
-            - build_cljs
+    - clojure/generic_job:
+        name: test_clj
+        wd: ~/datascript
+        docker_image: circleci/clojure:lein
+        restore_key: dependency-cache-{{ checksum "project.clj" }}
+        test_str: lein test-clj-all
+        save_key: dependency-cache-{{ checksum "project.clj" }}
+        paths:
+          - ~/.m2
