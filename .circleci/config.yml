@@ -18,6 +18,16 @@ jobs:
           test_str: << parameters.test_str >>
           save_key: "dependency-cache-{{ checksum \"project.clj\" }}"
           save_path: ~/.m2
+ test_cljs:
+   executor:
+     name: clojure/generic_exec
+     wd: ~/datascript
+     docker_image: circleci/node:8
+   steps:
+   - checkout
+   - attach_workspace:
+       at: .
+   - run: node ./test_node.js --all
 
 workflows:
   build-test-deploy:
@@ -25,3 +35,19 @@ workflows:
     - clojure_with_args:
         name: test_clj
         test_str: lein test-clj-all
+    - clojure_with_args:
+        name: test_clj_18
+        test_str: lein with-profile dev,1.8 test-clj-all
+    - clojure_with_args:
+        name: test_clj_19
+        test_str: lein with-profile dev,1.9 test-clj-all
+    - clojure_with_args:
+        name: build_cljs
+        test_str: lein test-clj-all
+        post-steps:
+          - persist_to_workspace:
+              root: .
+              paths:
+              - target/datascript.js
+              - release-js/datascript.js
+    - test_cljs
