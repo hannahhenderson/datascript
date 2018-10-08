@@ -2,11 +2,11 @@ version: 2.1
 description: hannah/clojure@dev:test orb
 
 jobs:
-  generic_job:
+  cached_test_job:
     parameters:
       restore_key:
         type: string
-        default: "<< checksum \"project.clj\" >>"
+        default: << checksum "project.clj" >>
       test_str:
         type: string
         default: "lein test"
@@ -15,7 +15,7 @@ jobs:
         default: ""
       save_key:
         type: string
-        default: "<< checksum \"project.clj\" >>"
+        default: << checksum "project.clj" >>
       save_path:
         type: string
         default: ~/.m2
@@ -28,7 +28,7 @@ jobs:
       wd: << parameters.wd >>
       docker_image: << parameters.docker_image >>
     steps:
-      - generic_commands:
+      - cached_test:
           restore_key: << parameters.restore_key >>
           test_str: << parameters.test_str >>
           test_directory: << parameters.test_directory >>
@@ -40,20 +40,20 @@ executors:
     parameters:
       wd:
         type: string
-        default: foo # ~
+        default: ~
       docker_image:
         type: string
-        default: bar # "circleci/clojure:lein"
+        default: "circleci/clojure:lein"
     working_directory: << parameters.wd >>
     docker:
     - image: <<parameters.docker_image>>
 
 commands:
-  generic_commands:
+  cached_test:
     parameters:
       restore_key:
         type: string
-        default: "<< checksum \"project.clj\" >>"
+        default: << checksum "project.clj" >>
       test_str:
         type: string
         default: "lein test"
@@ -62,7 +62,7 @@ commands:
         default: ""
       save_key:
         type: string
-        default: "<< checksum \"project.clj\" >>"
+        default: << checksum "project.clj" >>
       save_path:
         type: string
         default: ~/.m2
